@@ -5,7 +5,7 @@ function main(param: g.GameMainParameterObject): void {
 	const scene = new g.Scene({
 		game: g.game,
 		// このシーンで利用するアセットのIDを列挙し、シーンに通知します
-		assetIds: ["player", "edible_mushroom", "se"]
+		assetIds: ["player", "edible_mushroom", "eat"]
 	});
 	scene.onLoad.add(() => {
 		// ここからゲーム内容を記述します
@@ -13,7 +13,7 @@ function main(param: g.GameMainParameterObject): void {
 		// 各アセットオブジェクトを取得します
 		const playerImageAsset = scene.asset.getImageById("player");
 		const edible_mushroom_ImageAsset = scene.asset.getImageById("edible_mushroom");
-		const seAudioAsset = scene.asset.getAudioById("se");
+		const eatAudioAsset = scene.asset.getAudioById("eat");
 
 		// プレイヤー（キノコ君）を生成
 		const player = new g.Sprite({
@@ -67,15 +67,17 @@ function main(param: g.GameMainParameterObject): void {
 			++edible_mushroom.x;
 			c_edible_mushroom.position.x = edible_mushroom.x;
 
-			if (co.circleToCircle(c_player, c_edible_mushroom)) edible_mushroom.hide();
+			if (co.circleToCircle(c_player, c_edible_mushroom)) {
+				// 食べられるキノコと接触したら、食べる音を出し、食べられるキノコを消す（1回のみ）
+				if (edible_mushroom.visible()) {
+					eatAudioAsset.play();
+					edible_mushroom.hide();
+				}
+			}
 			// キノコの座標に変更があった場合、 modified() を実行して変更をゲームに通知
 			edible_mushroom.modified();
 		});
 
-		// 画面をタッチしたとき、SEを鳴らします⇒キノコとぶつかったときに食べる音にしたいので、参考としてコメントで置いておく
-		// scene.onPointDownCapture.add(() => {
-		// 	seAudioAsset.play();
-		// });
 		scene.append(player);
 		scene.append(edible_mushroom);
 		// ここまでゲーム内容を記述します

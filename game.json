@@ -10,11 +10,11 @@
 			"height": 32,
 			"path": "image/player.png"
 		},
-		"se": {
+		"eat": {
 			"type": "audio",
-			"path": "audio/se",
+			"path": "audio/eat",
 			"systemId": "sound",
-			"duration": 250,
+			"duration": 1423,
 			"hint": {
 				"extensions": [
 					".aac",
