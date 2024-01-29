@@ -17,7 +17,8 @@ function main(param: g.GameMainParameterObject): void {
 			scene: scene,
 			src: playerImageAsset,
 			width: playerImageAsset.width,
-			height: playerImageAsset.height
+			height: playerImageAsset.height,
+			touchable: true
 		});
 
 		// 食べられるキノコを生成
@@ -35,12 +36,18 @@ function main(param: g.GameMainParameterObject): void {
 		edible_mushroom.x = 0;
 		edible_mushroom.y = 20;
 
-		player.onUpdate.add(() => {
+		// キノコ君をマウスで動かせるようにする
+		player.onPointMove.add((event) => {
+			player.x += event.prevDelta.x;
+			player.y += event.prevDelta.y;
+			player.modified();
+		});
+
+		edible_mushroom.onUpdate.add(() => {
 			// 食べられるキノコを左→右に動かす
 			++edible_mushroom.x;
 
-			// プレイヤー・キノコの座標に変更があった場合、 modified() を実行して変更をゲームに通知
-			player.modified();
+			// キノコの座標に変更があった場合、 modified() を実行して変更をゲームに通知
 			edible_mushroom.modified();
 		});
 
