@@ -26,6 +26,12 @@
 			"type": "script",
 			"path": "script/main.js",
 			"global": true
+		},
+		"edible_mushroom": {
+			"type": "image",
+			"path": "image/edible_mushroom.png",
+			"width": 16,
+			"height": 16
 		}
 	},
 	"moduleMainScripts": {},
