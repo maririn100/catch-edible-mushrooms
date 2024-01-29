@@ -1,3 +1,6 @@
+import * as co from "@akashic-extension/collision-js";
+import { Vec2Like, Vec2 } from "@akashic-extension/collision-js";
+
 function main(param: g.GameMainParameterObject): void {
 	const scene = new g.Scene({
 		game: g.game,
@@ -12,7 +15,7 @@ function main(param: g.GameMainParameterObject): void {
 		const edible_mushroom_ImageAsset = scene.asset.getImageById("edible_mushroom");
 		const seAudioAsset = scene.asset.getAudioById("se");
 
-		// プレイヤーを生成
+		// プレイヤー（キノコ君）を生成
 		const player = new g.Sprite({
 			scene: scene,
 			src: playerImageAsset,
@@ -36,17 +39,35 @@ function main(param: g.GameMainParameterObject): void {
 		edible_mushroom.x = 0;
 		edible_mushroom.y = 20;
 
+		// キノコ君の接触範囲を設定
+		const c_player: co.Circle = {
+			position: { x: player.x, y: player.y },
+			radius: playerImageAsset.width / 4
+		};
+
+		// 食べられるキノコの接触範囲を設定
+		const c_edible_mushroom: co.Circle = {
+			position: { x: edible_mushroom.x, y: edible_mushroom.y },
+			radius: edible_mushroom_ImageAsset.width / 4
+		};
+
 		// キノコ君をマウスで動かせるようにする
 		player.onPointMove.add((event) => {
 			player.x += event.prevDelta.x;
 			player.y += event.prevDelta.y;
+
+			c_player.position.x = player.x;
+			c_player.position.y = player.y;
+
 			player.modified();
 		});
 
-		edible_mushroom.onUpdate.add(() => {
+		edible_mushroom.onUpdate.add((event) => {
 			// 食べられるキノコを左→右に動かす
 			++edible_mushroom.x;
+			c_edible_mushroom.position.x = edible_mushroom.x;
 
+			if (co.circleToCircle(c_player, c_edible_mushroom)) edible_mushroom.hide();
 			// キノコの座標に変更があった場合、 modified() を実行して変更をゲームに通知
 			edible_mushroom.modified();
 		});
