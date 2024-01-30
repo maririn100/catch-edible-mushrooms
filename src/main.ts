@@ -67,7 +67,8 @@ function main() {
 			scene: scene,
 			src: poisonous_mushroom_1_ImageAsset,
 			width: poisonous_mushroom_1_ImageAsset.width,
-			height: poisonous_mushroom_1_ImageAsset.height
+			height: poisonous_mushroom_1_ImageAsset.height,
+			hidden: true
 		});
 
 		// 背景を生成
@@ -172,7 +173,12 @@ function main() {
 			edible_mushroom.modified();
 		});
 
-		poisonous_mushroom(poisonous_mushroom_1, c_poisonous_mushroom_1, player, c_player, sirenAudioAsset, gameover);
+		// 3秒後に毒キノコ1を表示
+		scene.setTimeout(function () {
+			poisonous_mushroom_1.show();
+			poisonous_mushroom(poisonous_mushroom_1, c_poisonous_mushroom_1, player, c_player, sirenAudioAsset, gameover);
+		}, 3000);
+
 
 		scene.append(background);
 		scene.append(scoreLabel);
