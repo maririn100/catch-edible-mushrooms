@@ -9,7 +9,7 @@ function main(param: g.GameMainParameterObject): void {
 	const scene = new g.Scene({
 		game: g.game,
 		// このシーンで利用するアセットのIDを列挙し、シーンに通知します
-		assetIds: ["player", "edible_mushroom", "eat", "background"]
+		assetIds: ["player", "edible_mushroom", "eat", "background", "poisonous_mushroom_1", "siren"]
 	});
 	scene.onLoad.add(() => {
 		// ここからゲーム内容を記述します
@@ -19,6 +19,8 @@ function main(param: g.GameMainParameterObject): void {
 		const edible_mushroom_ImageAsset = scene.asset.getImageById("edible_mushroom");
 		const eatAudioAsset = scene.asset.getAudioById("eat");
 		const backgroundImageAsset = scene.asset.getImageById("background");
+		const poisonous_mushroom_1_ImageAsset = scene.asset.getImageById("poisonous_mushroom_1");
+		const sirenAudioAsset = scene.asset.getAudioById("siren");
 
 		// プレイヤー（キノコ君）を生成
 		const player = new g.Sprite({
@@ -35,6 +37,14 @@ function main(param: g.GameMainParameterObject): void {
 			src: edible_mushroom_ImageAsset,
 			width: edible_mushroom_ImageAsset.width,
 			height: edible_mushroom_ImageAsset.height
+		});
+
+		// 毒キノコを生成
+		const poisonous_mushroom_1 = new g.Sprite({
+			scene: scene,
+			src: poisonous_mushroom_1_ImageAsset,
+			width: poisonous_mushroom_1_ImageAsset.width,
+			height: poisonous_mushroom_1_ImageAsset.height
 		});
 
 		// 背景を生成
@@ -73,6 +83,10 @@ function main(param: g.GameMainParameterObject): void {
 		edible_mushroom.x = 0;
 		edible_mushroom.y = 40;
 
+		// 毒キノコの初期座標
+		poisonous_mushroom_1.x = 0;
+		poisonous_mushroom_1.y = 100;
+
 		// キノコ君の接触範囲を設定
 		const c_player: co.Circle = {
 			position: { x: player.x, y: player.y },
@@ -83,6 +97,12 @@ function main(param: g.GameMainParameterObject): void {
 		const c_edible_mushroom: co.Circle = {
 			position: { x: edible_mushroom.x, y: edible_mushroom.y },
 			radius: edible_mushroom_ImageAsset.width / 4
+		};
+
+		// 毒キノコの接触範囲を設定
+		const c_poisonous_mushroom_1: co.Circle = {
+			position: { x: poisonous_mushroom_1.x, y: poisonous_mushroom_1.y },
+			radius: poisonous_mushroom_1_ImageAsset.width / 4
 		};
 
 		// キノコ君をマウスで動かせるようにする
@@ -115,10 +135,29 @@ function main(param: g.GameMainParameterObject): void {
 			edible_mushroom.modified();
 		});
 
+		poisonous_mushroom_1.onUpdate.add((event) => {
+			// 毒キノコを左→右に動かす
+			++poisonous_mushroom_1.x;
+			c_poisonous_mushroom_1.position.x = poisonous_mushroom_1.x;
+
+			if (co.circleToCircle(c_player, c_poisonous_mushroom_1)) {
+				// 毒キノコと接触したら、救急車の音を出し、毒キノコを消す（1回のみ）
+				if (poisonous_mushroom_1.visible()) {
+					sirenAudioAsset.play();
+					poisonous_mushroom_1.hide();
+					player.angle = 90;
+					player.modified();
+				}
+			}
+			// キノコの座標に変更があった場合、 modified() を実行して変更をゲームに通知
+			poisonous_mushroom_1.modified();
+		});
+
 		scene.append(background);
 		scene.append(scoreLabel);
 		scene.append(player);
 		scene.append(edible_mushroom);
+		scene.append(poisonous_mushroom_1);
 		// ここまでゲーム内容を記述します
 	});
 	g.game.pushScene(scene);

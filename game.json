@@ -38,6 +38,24 @@
 			"path": "image/background.png",
 			"width": 640,
 			"height": 480
+		},
+		"poisonous_mushroom_1": {
+			"type": "image",
+			"path": "image/poisonous_mushroom_1.png",
+			"width": 16,
+			"height": 16
+		},
+		"siren": {
+			"type": "audio",
+			"path": "audio/siren",
+			"systemId": "sound",
+			"duration": 2536,
+			"hint": {
+				"extensions": [
+					".aac",
+					".ogg"
+				]
+			}
 		}
 	},
 	"moduleMainScripts": {
