@@ -39,12 +39,6 @@
 			"width": 640,
 			"height": 480
 		},
-		"poisonous_mushroom_1": {
-			"type": "image",
-			"path": "image/poisonous_mushroom_1.png",
-			"width": 16,
-			"height": 16
-		},
 		"siren": {
 			"type": "audio",
 			"path": "audio/siren",
@@ -63,9 +57,9 @@
 			"width": 460,
 			"height": 100
 		},
-		"poisonous_mushroom_2": {
+		"poisonous_mushroom": {
 			"type": "image",
-			"path": "image/poisonous_mushroom_2.png",
+			"path": "image/poisonous_mushroom.png",
 			"width": 16,
 			"height": 16
 		}
