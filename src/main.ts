@@ -1,5 +1,9 @@
 import * as co from "@akashic-extension/collision-js";
-// import { Vec2Like, Vec2 } from "@akashic-extension/collision-js";
+
+// スコアテキスト
+function scoreText(score: number, prefix: string) {
+	return prefix + ":" + score;
+}
 
 function main(param: g.GameMainParameterObject): void {
 	const scene = new g.Scene({
@@ -41,13 +45,33 @@ function main(param: g.GameMainParameterObject): void {
 			height: backgroundImageAsset.height
 		});
 
+		// ダイナミックフォントを生成
+		const font = new g.DynamicFont({
+			game: g.game,
+			fontFamily: "sans-serif",
+			size: 16
+		});
+
+		// スコアラベルを生成
+		const scoreLabel = new g.Label({
+			scene: scene,
+			font: font,
+			text: "SCORE:0",
+			fontSize: font.size,
+			x: 10,
+			y: 10
+		});
+
+		// スコアの初期化
+		let score: number = 0;
+
 		// プレイヤーの初期座標を、X軸は右寄り、Y軸は画面の中心に設定
 		player.x = g.game.width - player.width;
 		player.y = (g.game.height - player.height) / 2;
 
 		// 食べられるキノコの初期座標
 		edible_mushroom.x = 0;
-		edible_mushroom.y = 20;
+		edible_mushroom.y = 40;
 
 		// キノコ君の接触範囲を設定
 		const c_player: co.Circle = {
@@ -82,6 +106,9 @@ function main(param: g.GameMainParameterObject): void {
 				if (edible_mushroom.visible()) {
 					eatAudioAsset.play();
 					edible_mushroom.hide();
+					++score;
+					scoreLabel.text = scoreText(score, "SCORE");
+					scoreLabel.invalidate();
 				}
 			}
 			// キノコの座標に変更があった場合、 modified() を実行して変更をゲームに通知
@@ -89,6 +116,7 @@ function main(param: g.GameMainParameterObject): void {
 		});
 
 		scene.append(background);
+		scene.append(scoreLabel);
 		scene.append(player);
 		scene.append(edible_mushroom);
 		// ここまでゲーム内容を記述します
