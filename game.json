@@ -32,6 +32,12 @@
 			"path": "image/edible_mushroom.png",
 			"width": 16,
 			"height": 16
+		},
+		"background": {
+			"type": "image",
+			"path": "image/background.png",
+			"width": 640,
+			"height": 480
 		}
 	},
 	"moduleMainScripts": {

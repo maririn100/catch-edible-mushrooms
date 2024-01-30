@@ -1,11 +1,11 @@
 import * as co from "@akashic-extension/collision-js";
-import { Vec2Like, Vec2 } from "@akashic-extension/collision-js";
+// import { Vec2Like, Vec2 } from "@akashic-extension/collision-js";
 
 function main(param: g.GameMainParameterObject): void {
 	const scene = new g.Scene({
 		game: g.game,
 		// このシーンで利用するアセットのIDを列挙し、シーンに通知します
-		assetIds: ["player", "edible_mushroom", "eat"]
+		assetIds: ["player", "edible_mushroom", "eat", "background"]
 	});
 	scene.onLoad.add(() => {
 		// ここからゲーム内容を記述します
@@ -14,6 +14,7 @@ function main(param: g.GameMainParameterObject): void {
 		const playerImageAsset = scene.asset.getImageById("player");
 		const edible_mushroom_ImageAsset = scene.asset.getImageById("edible_mushroom");
 		const eatAudioAsset = scene.asset.getAudioById("eat");
+		const backgroundImageAsset = scene.asset.getImageById("background");
 
 		// プレイヤー（キノコ君）を生成
 		const player = new g.Sprite({
@@ -31,6 +32,15 @@ function main(param: g.GameMainParameterObject): void {
 			width: edible_mushroom_ImageAsset.width,
 			height: edible_mushroom_ImageAsset.height
 		});
+
+		// 背景を生成
+		const background = new g.Sprite({
+			scene: scene,
+			src: backgroundImageAsset,
+			width: backgroundImageAsset.width,
+			height: backgroundImageAsset.height
+		});
+
 		// プレイヤーの初期座標を、X軸は右寄り、Y軸は画面の中心に設定
 		player.x = g.game.width - player.width;
 		player.y = (g.game.height - player.height) / 2;
@@ -78,6 +88,7 @@ function main(param: g.GameMainParameterObject): void {
 			edible_mushroom.modified();
 		});
 
+		scene.append(background);
 		scene.append(player);
 		scene.append(edible_mushroom);
 		// ここまでゲーム内容を記述します
