@@ -62,6 +62,12 @@
 			"path": "image/gameover.png",
 			"width": 460,
 			"height": 100
+		},
+		"poisonous_mushroom_2": {
+			"type": "image",
+			"path": "image/poisonous_mushroom_2.png",
+			"width": 16,
+			"height": 16
 		}
 	},
 	"moduleMainScripts": {

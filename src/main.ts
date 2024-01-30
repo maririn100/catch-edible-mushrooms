@@ -5,7 +5,29 @@ function scoreText(score: number, prefix: string) {
 	return prefix + ":" + score;
 }
 
-function main(param: g.GameMainParameterObject): void {
+function poisonous_mushroom(poisonous_mushroom: g.Sprite, c_poisonous_mushroom: co.Circle, player: g.Sprite, c_player: co.Circle, sirenAudioAsset: any, gameover: g.Sprite) {
+	poisonous_mushroom.onUpdate.add(() => {
+		// 毒キノコを左→右に動かす
+		++poisonous_mushroom.x;
+		c_poisonous_mushroom.position.x = poisonous_mushroom.x;
+
+		if (co.circleToCircle(c_player, c_poisonous_mushroom)) {
+			// 毒キノコと接触したら、救急車の音を出し、毒キノコを消す（1回のみ）
+			if (poisonous_mushroom.visible()) {
+				sirenAudioAsset.play();
+				poisonous_mushroom.hide();
+				player.angle = 90;
+				player.touchable = false;
+				player.modified();
+				gameover.show();
+			}
+		}
+		// キノコの座標に変更があった場合、 modified() を実行して変更をゲームに通知
+		poisonous_mushroom.modified();
+	});
+}
+
+function main() {
 	const scene = new g.Scene({
 		game: g.game,
 		// このシーンで利用するアセットのIDを列挙し、シーンに通知します
@@ -131,7 +153,7 @@ function main(param: g.GameMainParameterObject): void {
 			player.modified();
 		});
 
-		edible_mushroom.onUpdate.add((event) => {
+		edible_mushroom.onUpdate.add(() => {
 			// 食べられるキノコを左→右に動かす
 			++edible_mushroom.x;
 			c_edible_mushroom.position.x = edible_mushroom.x;
@@ -150,25 +172,7 @@ function main(param: g.GameMainParameterObject): void {
 			edible_mushroom.modified();
 		});
 
-		poisonous_mushroom_1.onUpdate.add((event) => {
-			// 毒キノコを左→右に動かす
-			++poisonous_mushroom_1.x;
-			c_poisonous_mushroom_1.position.x = poisonous_mushroom_1.x;
-
-			if (co.circleToCircle(c_player, c_poisonous_mushroom_1)) {
-				// 毒キノコと接触したら、救急車の音を出し、毒キノコを消す（1回のみ）
-				if (poisonous_mushroom_1.visible()) {
-					sirenAudioAsset.play();
-					poisonous_mushroom_1.hide();
-					player.angle = 90;
-					player.touchable = false;
-					player.modified();
-					gameover.show();
-				}
-			}
-			// キノコの座標に変更があった場合、 modified() を実行して変更をゲームに通知
-			poisonous_mushroom_1.modified();
-		});
+		poisonous_mushroom(poisonous_mushroom_1, c_poisonous_mushroom_1, player, c_player, sirenAudioAsset, gameover);
 
 		scene.append(background);
 		scene.append(scoreLabel);
