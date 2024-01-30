@@ -27,12 +27,6 @@
 			"path": "script/main.js",
 			"global": true
 		},
-		"edible_mushroom": {
-			"type": "image",
-			"path": "image/edible_mushroom.png",
-			"width": 16,
-			"height": 16
-		},
 		"background": {
 			"type": "image",
 			"path": "image/background.png",
@@ -57,9 +51,15 @@
 			"width": 460,
 			"height": 100
 		},
-		"poisonous_mushroom": {
+		"edibleMushroom": {
 			"type": "image",
-			"path": "image/poisonous_mushroom.png",
+			"path": "image/edibleMushroom.png",
+			"width": 16,
+			"height": 16
+		},
+		"poisonousMushroom": {
+			"type": "image",
+			"path": "image/poisonousMushroom.png",
 			"width": 16,
 			"height": 16
 		}
