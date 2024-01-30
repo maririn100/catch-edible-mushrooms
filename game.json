@@ -56,6 +56,12 @@
 					".ogg"
 				]
 			}
+		},
+		"gameover": {
+			"type": "image",
+			"path": "image/gameover.png",
+			"width": 460,
+			"height": 100
 		}
 	},
 	"moduleMainScripts": {

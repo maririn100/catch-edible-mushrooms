@@ -9,7 +9,7 @@ function main(param: g.GameMainParameterObject): void {
 	const scene = new g.Scene({
 		game: g.game,
 		// このシーンで利用するアセットのIDを列挙し、シーンに通知します
-		assetIds: ["player", "edible_mushroom", "eat", "background", "poisonous_mushroom_1", "siren"]
+		assetIds: ["player", "edible_mushroom", "eat", "background", "poisonous_mushroom_1", "siren", "gameover"]
 	});
 	scene.onLoad.add(() => {
 		// ここからゲーム内容を記述します
@@ -21,6 +21,7 @@ function main(param: g.GameMainParameterObject): void {
 		const backgroundImageAsset = scene.asset.getImageById("background");
 		const poisonous_mushroom_1_ImageAsset = scene.asset.getImageById("poisonous_mushroom_1");
 		const sirenAudioAsset = scene.asset.getAudioById("siren");
+		const gameoverImageAsset = scene.asset.getImageById("gameover");
 
 		// プレイヤー（キノコ君）を生成
 		const player = new g.Sprite({
@@ -55,6 +56,16 @@ function main(param: g.GameMainParameterObject): void {
 			height: backgroundImageAsset.height
 		});
 
+		// ゲームオーバー画像を生成
+		const gameover = new g.Sprite({
+			scene: scene,
+			src: gameoverImageAsset,
+			width: gameoverImageAsset.width,
+			height: gameoverImageAsset.height,
+			hidden: true
+		});
+
+
 		// ダイナミックフォントを生成
 		const font = new g.DynamicFont({
 			game: g.game,
@@ -86,6 +97,10 @@ function main(param: g.GameMainParameterObject): void {
 		// 毒キノコの初期座標
 		poisonous_mushroom_1.x = 0;
 		poisonous_mushroom_1.y = 100;
+
+		// ゲームオーバー画像の初期座標
+		gameover.x = (g.game.width - gameover.width) / 2;
+		gameover.y = (g.game.height - gameover.height) / 2;
 
 		// キノコ君の接触範囲を設定
 		const c_player: co.Circle = {
@@ -146,7 +161,9 @@ function main(param: g.GameMainParameterObject): void {
 					sirenAudioAsset.play();
 					poisonous_mushroom_1.hide();
 					player.angle = 90;
+					player.touchable = false;
 					player.modified();
+					gameover.show();
 				}
 			}
 			// キノコの座標に変更があった場合、 modified() を実行して変更をゲームに通知
@@ -158,6 +175,7 @@ function main(param: g.GameMainParameterObject): void {
 		scene.append(player);
 		scene.append(edible_mushroom);
 		scene.append(poisonous_mushroom_1);
+		scene.append(gameover);
 		// ここまでゲーム内容を記述します
 	});
 	g.game.pushScene(scene);
