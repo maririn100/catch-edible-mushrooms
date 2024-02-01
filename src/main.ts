@@ -53,7 +53,7 @@ function edibleMushroomMove(edibleMushroom: g.Sprite, c_edibleMushroom: co.Circl
 
 		if (co.circleToCircle(c_player, c_edibleMushroom)) {
 			// 食べられるキノコと接触したら、食べる音を出し、食べられるキノコを消す（1回のみ）
-			if (edibleMushroom.visible()) {
+			if (edibleMushroom.visible() === true) {
 				eatAudioAsset.play();
 				edibleMushroom.hide();
 				++score;
@@ -109,7 +109,7 @@ function poisonousMushroomMove(poisonousMushroom: g.Sprite, c_poisonousMushroom:
 
 		if (co.circleToCircle(c_player, c_poisonousMushroom)) {
 			// 毒キノコと接触したら、救急車の音を出し、毒キノコを消す（1回のみ）
-			if (poisonousMushroom.visible()) {
+			if (poisonousMushroom.visible() === true && clear.visible() === false) {
 				sirenAudioAsset.play();
 				poisonousMushroom.hide();
 				player.angle = 90;
