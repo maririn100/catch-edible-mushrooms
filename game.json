@@ -62,6 +62,12 @@
 			"path": "image/poisonousMushroom.png",
 			"width": 16,
 			"height": 16
+		},
+		"clear": {
+			"type": "image",
+			"path": "image/clear.png",
+			"width": 470,
+			"height": 130
 		}
 	},
 	"moduleMainScripts": {
