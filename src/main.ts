@@ -1,9 +1,75 @@
 import * as co from "@akashic-extension/collision-js";
 import { AudioAsset, ImageAsset, Scene } from "@akashic/akashic-engine";
 
-// スコアテキスト
 function scoreText(score: number, prefix: string) {
+	// スコアテキスト設定
 	return prefix + ":" + score;
+}
+
+function edibleMushroomCreate(scene: Scene, edibleMushroomImageAsset: ImageAsset, p_x: number, p_y: number) {
+	// 食べられるキノコを生成
+	const edibleMushroom = new g.Sprite({
+		scene: scene,
+		src: edibleMushroomImageAsset,
+		width: edibleMushroomImageAsset.width,
+		height: edibleMushroomImageAsset.height,
+		hidden: true,
+		x: p_x,
+		y: p_y
+	});
+
+	return edibleMushroom;
+}
+
+function c_edibleMushroomCreate(edibleMushroom: g.Sprite, edibleMushroomImageAsset: ImageAsset) {
+	// 食べられるキノコの接触範囲を設定
+	const c_edibleMushroom: co.Circle = {
+		position: { x: edibleMushroom.x, y: edibleMushroom.y },
+		radius: edibleMushroomImageAsset.width / 4
+	};
+
+	return c_edibleMushroom;
+}
+
+function edibleMushroomMove(edibleMushroom: g.Sprite, c_edibleMushroom: co.Circle,
+	c_player: co.Circle, eatAudioAsset: AudioAsset, score: number, scoreLabel: g.Label, moveSpeed: number) {
+	edibleMushroom.onUpdate.add(() => {
+		// 食べられるキノコを左→右に動かす
+		++edibleMushroom.x;
+		c_edibleMushroom.position.x = edibleMushroom.x;
+
+		if (co.circleToCircle(c_player, c_edibleMushroom)) {
+			// 食べられるキノコと接触したら、食べる音を出し、食べられるキノコを消す（1回のみ）
+			if (edibleMushroom.visible()) {
+				eatAudioAsset.play();
+				edibleMushroom.hide();
+				++score;
+				scoreLabel.text = scoreText(score, "SCORE");
+				scoreLabel.invalidate();
+			}
+		}
+		// キノコの座標に変更があった場合、 modified() を実行して変更をゲームに通知
+		edibleMushroom.modified();
+	});
+	// 	edibleMushroom.onUpdate.add(() => {
+	// 	// 食べられるキノコを左→右に動かす
+	// 	edibleMushroom.x += moveSpeed;
+	// 	c_edibleMushroom.position.x = edibleMushroom.x;
+
+	// 	if (co.circleToCircle(c_player, c_edibleMushroom)) {
+	// 		// 毒キノコと接触したら、救急車の音を出し、毒キノコを消す（1回のみ）
+	// 		if (edibleMushroom.visible()) {
+	// 			sirenAudioAsset.play();
+	// 			edibleMushroom.hide();
+	// 			player.angle = 90;
+	// 			player.touchable = false;
+	// 			player.modified();
+	// 			gameover.show();
+	// 		}
+	// 	}
+	// 	// キノコの座標に変更があった場合、 modified() を実行して変更をゲームに通知
+	// 	edibleMushroom.modified();
+	// });
 }
 
 function poisonousMushroomCreate(scene: Scene, poisonousMushroomImageAsset: ImageAsset, p_x: number, p_y: number) {
@@ -72,30 +138,6 @@ function main() {
 		const sirenAudioAsset = scene.asset.getAudioById("siren");
 		const gameoverImageAsset = scene.asset.getImageById("gameover");
 
-		// プレイヤー（キノコ君）を生成
-		const player = new g.Sprite({
-			scene: scene,
-			src: playerImageAsset,
-			width: playerImageAsset.width,
-			height: playerImageAsset.height,
-			touchable: true
-		});
-
-		// 食べられるキノコを生成
-		const edibleMushroom = new g.Sprite({
-			scene: scene,
-			src: edibleMushroomImageAsset,
-			width: edibleMushroomImageAsset.width,
-			height: edibleMushroomImageAsset.height
-		});
-
-		// 毒キノコを生成
-		const poisonousMushroom_1 = poisonousMushroomCreate(scene, poisonousMushroomImageAsset, 0, 100);
-		const c_poisonousMushroom_1 = c_poisonousMushroomCreate(poisonousMushroom_1, poisonousMushroomImageAsset);
-
-		const poisonousMushroom_2 = poisonousMushroomCreate(scene, poisonousMushroomImageAsset, 0, 140);
-		const c_poisonousMushroom_2 = c_poisonousMushroomCreate(poisonousMushroom_2, poisonousMushroomImageAsset);
-
 		// 背景を生成
 		const background = new g.Sprite({
 			scene: scene,
@@ -103,16 +145,7 @@ function main() {
 			width: backgroundImageAsset.width,
 			height: backgroundImageAsset.height
 		});
-
-		// ゲームオーバー画像を生成
-		const gameover = new g.Sprite({
-			scene: scene,
-			src: gameoverImageAsset,
-			width: gameoverImageAsset.width,
-			height: gameoverImageAsset.height,
-			hidden: true
-		});
-
+		scene.append(background);
 
 		// ダイナミックフォントを生成
 		const font = new g.DynamicFont({
@@ -134,31 +167,29 @@ function main() {
 		// スコアの初期化
 		let score: number = 0;
 
-		// プレイヤーの初期座標を、X軸は右寄り、Y軸は画面の中心に設定
+		scene.append(scoreLabel);
+
+
+		// プレイヤー（キノコ君）を生成
+		const player = new g.Sprite({
+			scene: scene,
+			src: playerImageAsset,
+			width: playerImageAsset.width,
+			height: playerImageAsset.height,
+			touchable: true
+		});
+
+		// プレイヤー（キノコ君）の初期座標を、X軸は右寄り、Y軸は画面の中心に設定
 		player.x = g.game.width - player.width;
 		player.y = (g.game.height - player.height) / 2;
 
-		// 食べられるキノコの初期座標
-		edibleMushroom.x = 0;
-		edibleMushroom.y = 40;
-
-		// ゲームオーバー画像の初期座標
-		gameover.x = (g.game.width - gameover.width) / 2;
-		gameover.y = (g.game.height - gameover.height) / 2;
-
-		// キノコ君の接触範囲を設定
+		// プレイヤー（キノコ君）の接触範囲を設定
 		const c_player: co.Circle = {
 			position: { x: player.x, y: player.y },
 			radius: playerImageAsset.width / 4
 		};
 
-		// 食べられるキノコの接触範囲を設定
-		const c_edibleMushroom: co.Circle = {
-			position: { x: edibleMushroom.x, y: edibleMushroom.y },
-			radius: edibleMushroomImageAsset.width / 4
-		};
-
-		// キノコ君をマウスで動かせるようにする
+		// プレイヤー（キノコ君）をマウスで動かせるようにする
 		player.onPointMove.add((event) => {
 			player.x += event.prevDelta.x;
 			player.y += event.prevDelta.y;
@@ -169,43 +200,54 @@ function main() {
 			player.modified();
 		});
 
-		edibleMushroom.onUpdate.add(() => {
-			// 食べられるキノコを左→右に動かす
-			++edibleMushroom.x;
-			c_edibleMushroom.position.x = edibleMushroom.x;
+		scene.append(player);
 
-			if (co.circleToCircle(c_player, c_edibleMushroom)) {
-				// 食べられるキノコと接触したら、食べる音を出し、食べられるキノコを消す（1回のみ）
-				if (edibleMushroom.visible()) {
-					eatAudioAsset.play();
-					edibleMushroom.hide();
-					++score;
-					scoreLabel.text = scoreText(score, "SCORE");
-					scoreLabel.invalidate();
-				}
-			}
-			// キノコの座標に変更があった場合、 modified() を実行して変更をゲームに通知
-			edibleMushroom.modified();
+		// ゲームオーバー画像を生成
+		const gameover = new g.Sprite({
+			scene: scene,
+			src: gameoverImageAsset,
+			width: gameoverImageAsset.width,
+			height: gameoverImageAsset.height,
+			hidden: true
 		});
 
+		// ゲームオーバー画像の初期座標
+		gameover.x = (g.game.width - gameover.width) / 2;
+		gameover.y = (g.game.height - gameover.height) / 2;
+
+		scene.append(gameover);
+
+		// 食べられるキノコ1を生成
+		const edibleMushroom_1 = edibleMushroomCreate(scene, edibleMushroomImageAsset, 0, 40);
+		const c_edibleMushroom_1 = c_edibleMushroomCreate(edibleMushroom_1, edibleMushroomImageAsset);
+		// 食べられるキノコ1を即表示
+		edibleMushroom_1.show();
+		edibleMushroomMove(edibleMushroom_1, c_edibleMushroom_1, c_player, eatAudioAsset, score, scoreLabel, 1);
+		scene.append(edibleMushroom_1);
+
+		// 毒キノコ1を生成
+		const poisonousMushroom_1 = poisonousMushroomCreate(scene, poisonousMushroomImageAsset, 0, 100);
+		const c_poisonousMushroom_1 = c_poisonousMushroomCreate(poisonousMushroom_1, poisonousMushroomImageAsset);
 		// 1秒後に毒キノコ1を表示
 		scene.setTimeout(function () {
 			poisonousMushroom_1.show();
 			poisonousMushroomMove(poisonousMushroom_1, c_poisonousMushroom_1, player, c_player, sirenAudioAsset, gameover, 2);
+			scene.append(poisonousMushroom_1);
 		}, 1000);
+
+
+		// 毒キノコ2を生成
+		const poisonousMushroom_2 = poisonousMushroomCreate(scene, poisonousMushroomImageAsset, 0, 140);
+		const c_poisonousMushroom_2 = c_poisonousMushroomCreate(poisonousMushroom_2, poisonousMushroomImageAsset);
+
 		// 2秒後に毒キノコ2を表示
 		scene.setTimeout(function () {
 			poisonousMushroom_2.show();
 			poisonousMushroomMove(poisonousMushroom_2, c_poisonousMushroom_2, player, c_player, sirenAudioAsset, gameover, 3);
+			scene.append(poisonousMushroom_2);
 		}, 2000);
 
-		scene.append(background);
-		scene.append(scoreLabel);
-		scene.append(player);
-		scene.append(edibleMushroom);
-		scene.append(poisonousMushroom_1);
-		scene.append(poisonousMushroom_2);
-		scene.append(gameover);
+
 		// ここまでゲーム内容を記述します
 	});
 	g.game.pushScene(scene);
