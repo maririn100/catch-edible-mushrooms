@@ -38,9 +38,18 @@ function edibleMushroomMove(edibleMushroom: g.Sprite, c_edibleMushroom: co.Circl
 			edibleMushroom.x = 0;
 			edibleMushroom.show();
 		}
+		if (edibleMushroom.y >= 480 && gameover.visible() === false) {
+			edibleMushroom.y = 0;
+			edibleMushroom.show();
+		}
+
 		// 食べられるキノコを左→右に動かす
 		edibleMushroom.x += moveSpeed;
 		c_edibleMushroom.position.x = edibleMushroom.x;
+
+		// 食べられるキノコを上→下に動かす
+		edibleMushroom.y += 1;
+		c_edibleMushroom.position.y = edibleMushroom.y;
 
 		if (co.circleToCircle(c_player, c_edibleMushroom)) {
 			// 食べられるキノコと接触したら、食べる音を出し、食べられるキノコを消す（1回のみ）
@@ -206,35 +215,44 @@ function main() {
 
 		scene.append(gameover);
 
-		// 食べられるキノコ1を生成
-		const edibleMushroom_1 = edibleMushroomCreate(scene, edibleMushroomImageAsset, 0, 40);
-		const c_edibleMushroom_1 = c_edibleMushroomCreate(edibleMushroom_1, edibleMushroomImageAsset);
-		// 食べられるキノコ1を即表示
-		edibleMushroom_1.show();
-		edibleMushroomMove(edibleMushroom_1, c_edibleMushroom_1, c_player, eatAudioAsset, score, scoreLabel, gameover, 5);
-		scene.append(edibleMushroom_1);
+		// 食べられるキノコを生成
+		const edibleMushroom = edibleMushroomCreate(scene, edibleMushroomImageAsset, 0, 40);
+		const c_edibleMushroom = c_edibleMushroomCreate(edibleMushroom, edibleMushroomImageAsset);
+		// 食べられるキノコを即表示
+		edibleMushroom.show();
+		edibleMushroomMove(edibleMushroom, c_edibleMushroom, c_player, eatAudioAsset, score, scoreLabel, gameover, 5);
+		scene.append(edibleMushroom);
 
 		// 毒キノコ1を生成
-		const poisonousMushroom_1 = poisonousMushroomCreate(scene, poisonousMushroomImageAsset, 0, 100);
+		const poisonousMushroom_1 = poisonousMushroomCreate(scene, poisonousMushroomImageAsset, 0, 60);
 		const c_poisonousMushroom_1 = c_poisonousMushroomCreate(poisonousMushroom_1, poisonousMushroomImageAsset);
-		// 1秒後に毒キノコ1を表示
-		scene.setTimeout(function () {
-			poisonousMushroom_1.show();
-			poisonousMushroomMove(poisonousMushroom_1, c_poisonousMushroom_1, player, c_player, sirenAudioAsset, gameover, 5);
-			scene.append(poisonousMushroom_1);
-		}, 1000);
-
+		// 毒キノコ1を即表示
+		poisonousMushroom_1.show();
+		poisonousMushroomMove(poisonousMushroom_1, c_poisonousMushroom_1, player, c_player, sirenAudioAsset, gameover, 5);
+		scene.append(poisonousMushroom_1);
 
 		// 毒キノコ2を生成
-		const poisonousMushroom_2 = poisonousMushroomCreate(scene, poisonousMushroomImageAsset, 0, 140);
+		const poisonousMushroom_2 = poisonousMushroomCreate(scene, poisonousMushroomImageAsset, 0, 80);
 		const c_poisonousMushroom_2 = c_poisonousMushroomCreate(poisonousMushroom_2, poisonousMushroomImageAsset);
 
-		// 2秒後に毒キノコ2を表示
+		// 0.1秒後に毒キノコ2を表示
 		scene.setTimeout(function () {
 			poisonousMushroom_2.show();
 			poisonousMushroomMove(poisonousMushroom_2, c_poisonousMushroom_2, player, c_player, sirenAudioAsset, gameover, 5);
 			scene.append(poisonousMushroom_2);
-		}, 2000);
+		}, 100);
+
+		// 毒キノコ3を生成
+		const poisonousMushroom_3 = poisonousMushroomCreate(scene, poisonousMushroomImageAsset, 0, 100);
+		const c_poisonousMushroom_3 = c_poisonousMushroomCreate(poisonousMushroom_3, poisonousMushroomImageAsset);
+
+		// 0.2秒後に毒キノコ3を表示
+		scene.setTimeout(function () {
+			poisonousMushroom_3.show();
+			poisonousMushroomMove(poisonousMushroom_3, c_poisonousMushroom_3, player, c_player, sirenAudioAsset, gameover, 5);
+			scene.append(poisonousMushroom_3);
+		}, 200);
+
 
 
 		// ここまでゲーム内容を記述します
