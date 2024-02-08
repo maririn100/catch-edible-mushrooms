@@ -254,38 +254,12 @@ function main() {
 		edibleMushroomMove(edibleMushroom, c_edibleMushroom, c_player, eatAudioAsset, score, scoreLabel, gameover, clear, player, 5);
 		scene.append(edibleMushroom);
 
-		// 毒キノコ1を表示
-		poisonousMushroomShow(scene, poisonousMushroomImageAsset, player, c_player, sirenAudioAsset, gameover, clear, 5, 60);
-
-		// 0.1秒後に毒キノコ2を表示
-		scene.setTimeout(function () {
-			poisonousMushroomShow(scene, poisonousMushroomImageAsset, player, c_player, sirenAudioAsset, gameover, clear, 5, 120);
-		}, 100);
-
-		// 0.2秒後に毒キノコ3を表示
-		scene.setTimeout(function () {
-			poisonousMushroomShow(scene, poisonousMushroomImageAsset, player, c_player, sirenAudioAsset, gameover, clear, 5, 180);
-		}, 200);
-
-		// 0.3秒後に毒キノコ4を表示
-		scene.setTimeout(function () {
-			poisonousMushroomShow(scene, poisonousMushroomImageAsset, player, c_player, sirenAudioAsset, gameover, clear, 5, 240);
-		}, 300);
-
-		// 0.4秒後に毒キノコ5を表示
-		scene.setTimeout(function () {
-			poisonousMushroomShow(scene, poisonousMushroomImageAsset, player, c_player, sirenAudioAsset, gameover, clear, 5, 300);
-		}, 400);
-
-		// 0.5秒後に毒キノコ6を表示
-		scene.setTimeout(function () {
-			poisonousMushroomShow(scene, poisonousMushroomImageAsset, player, c_player, sirenAudioAsset, gameover, clear, 5, 360);
-		}, 500);
-
-		// 0.6秒後に毒キノコ7を表示
-		scene.setTimeout(function () {
-			poisonousMushroomShow(scene, poisonousMushroomImageAsset, player, c_player, sirenAudioAsset, gameover, clear, 5, 420);
-		}, 600);
+		// 毒キノコを表示
+		for (let i = 0; i < 7; i++) {
+			scene.setTimeout(function () {
+				poisonousMushroomShow(scene, poisonousMushroomImageAsset, player, c_player, sirenAudioAsset, gameover, clear, 5, 60 * (i + 1));
+			}, i * 100);
+		}
 
 		// ここまでゲーム内容を記述します
 	});
