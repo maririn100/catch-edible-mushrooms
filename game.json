@@ -74,6 +74,12 @@
 			"path": "image/start.png",
 			"width": 310,
 			"height": 110
+		},
+		"restart": {
+			"type": "image",
+			"path": "image/restart.png",
+			"width": 165,
+			"height": 50
 		}
 	},
 	"moduleMainScripts": {

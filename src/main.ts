@@ -97,7 +97,7 @@ function c_poisonousMushroomCreate(poisonousMushroom: g.Sprite, poisonousMushroo
 }
 
 function poisonousMushroomMove(poisonousMushroom: g.Sprite, c_poisonousMushroom: co.Circle,
-	player: g.Sprite, c_player: co.Circle, sirenAudioAsset: AudioAsset, gameover: g.Sprite, clear: g.Sprite, moveSpeed: number) {
+	player: g.Sprite, c_player: co.Circle, sirenAudioAsset: AudioAsset, gameover: g.Sprite, clear: g.Sprite, restart: g.Sprite, moveSpeed: number) {
 	poisonousMushroom.onUpdate.add(() => {
 		if (poisonousMushroom.x >= 640 && gameover.visible() === false && clear.visible() === false) {
 			poisonousMushroom.x = 0;
@@ -116,6 +116,7 @@ function poisonousMushroomMove(poisonousMushroom: g.Sprite, c_poisonousMushroom:
 				player.touchable = false;
 				player.modified();
 				gameover.show();
+				restart.show();
 			}
 		}
 		// キノコの座標に変更があった場合、 modified() を実行して変更をゲームに通知
@@ -124,37 +125,32 @@ function poisonousMushroomMove(poisonousMushroom: g.Sprite, c_poisonousMushroom:
 }
 
 function poisonousMushroomShow(scene: Scene, poisonousMushroomImageAsset: ImageAsset, player: g.Sprite, c_player: co.Circle,
-	sirenAudioAsset: AudioAsset, gameover: g.Sprite, clear: g.Sprite, moveSpeed: number, p_y: number) {
+	sirenAudioAsset: AudioAsset, gameover: g.Sprite, clear: g.Sprite, restart: g.Sprite, moveSpeed: number, p_y: number) {
 	// 毒キノコを生成
 	const poisonousMushroom = poisonousMushroomCreate(scene, poisonousMushroomImageAsset, 0, p_y);
 	const c_poisonousMushroom = c_poisonousMushroomCreate(poisonousMushroom, poisonousMushroomImageAsset);
 	// 毒キノコを即表示
 	poisonousMushroom.show();
-	poisonousMushroomMove(poisonousMushroom, c_poisonousMushroom, player, c_player, sirenAudioAsset, gameover, clear, moveSpeed);
+	poisonousMushroomMove(poisonousMushroom, c_poisonousMushroom, player, c_player, sirenAudioAsset, gameover, clear, restart, moveSpeed);
 	scene.append(poisonousMushroom);
 }
 
-function main() {
-	const sceneStart = new g.Scene({
-		game: g.game,
-		// このシーンで利用するアセットのIDを列挙し、シーンに通知します
-		assetIds: ["background", "start"]
-	});
-	sceneStart.onLoad.add(() => {
-		const backgroundImageAsset = sceneStart.asset.getImageById("background");
-		const startImageAsset = sceneStart.asset.getImageById("start");
+function start(startScene: Scene, mainScene: Scene) {
+	startScene.onLoad.add(() => {
+		const backgroundImageAsset = startScene.asset.getImageById("background");
+		const startImageAsset = startScene.asset.getImageById("start");
 		// 背景を生成
 		const background = new g.Sprite({
-			scene: sceneStart,
+			scene: startScene,
 			src: backgroundImageAsset,
 			width: backgroundImageAsset.width,
 			height: backgroundImageAsset.height
 		});
-		sceneStart.append(background);
+		startScene.append(background);
 
 		// スタート画像を生成
 		const start = new g.Sprite({
-			scene: sceneStart,
+			scene: startScene,
 			src: startImageAsset,
 			width: startImageAsset.width,
 			height: startImageAsset.height,
@@ -165,38 +161,54 @@ function main() {
 		start.x = (g.game.width - start.width) / 2;
 		start.y = (g.game.height - start.height) / 2;
 
-		sceneStart.append(start);
+		startScene.append(start);
 		start.onPointUp.add(function () {
-			g.game.replaceScene(scene);
+			g.game.replaceScene(mainScene);
 		});
 	});
+}
 
+function startSceneCreate() {
+	const startScene = new g.Scene({
+		game: g.game,
+		// このシーンで利用するアセットのIDを列挙し、シーンに通知します
+		assetIds: ["background", "start"]
+	});
+	return startScene;
+}
+
+function mainSceneCreate() {
 	const scene = new g.Scene({
 		game: g.game,
 		// このシーンで利用するアセットのIDを列挙し、シーンに通知します
-		assetIds: ["player", "edibleMushroom", "eat", "background", "poisonousMushroom", "siren", "gameover", "clear"]
+		assetIds: ["player", "edibleMushroom", "eat", "background", "poisonousMushroom", "siren", "gameover", "clear", "restart"]
 	});
-	scene.onLoad.add(() => {
+	return scene;
+}
+
+function mainLoad(mainScene: Scene) {
+	mainScene.onLoad.add(() => {
 		// ここからゲーム内容を記述します
 
 		// 各アセットオブジェクトを取得します
-		const playerImageAsset = scene.asset.getImageById("player");
-		const edibleMushroomImageAsset = scene.asset.getImageById("edibleMushroom");
-		const eatAudioAsset = scene.asset.getAudioById("eat");
-		const backgroundImageAsset = scene.asset.getImageById("background");
-		const poisonousMushroomImageAsset = scene.asset.getImageById("poisonousMushroom");
-		const sirenAudioAsset = scene.asset.getAudioById("siren");
-		const gameoverImageAsset = scene.asset.getImageById("gameover");
-		const clearImageAsset = scene.asset.getImageById("clear");
+		const playerImageAsset = mainScene.asset.getImageById("player");
+		const edibleMushroomImageAsset = mainScene.asset.getImageById("edibleMushroom");
+		const eatAudioAsset = mainScene.asset.getAudioById("eat");
+		const backgroundImageAsset = mainScene.asset.getImageById("background");
+		const poisonousMushroomImageAsset = mainScene.asset.getImageById("poisonousMushroom");
+		const sirenAudioAsset = mainScene.asset.getAudioById("siren");
+		const gameoverImageAsset = mainScene.asset.getImageById("gameover");
+		const clearImageAsset = mainScene.asset.getImageById("clear");
+		const restartImageAsset = mainScene.asset.getImageById("restart");
 
 		// 背景を生成
 		const background = new g.Sprite({
-			scene: scene,
+			scene: mainScene,
 			src: backgroundImageAsset,
 			width: backgroundImageAsset.width,
 			height: backgroundImageAsset.height
 		});
-		scene.append(background);
+		mainScene.append(background);
 
 		// ダイナミックフォントを生成
 		const font = new g.DynamicFont({
@@ -207,7 +219,7 @@ function main() {
 
 		// スコアラベルを生成
 		const scoreLabel = new g.Label({
-			scene: scene,
+			scene: mainScene,
 			font: font,
 			text: "SCORE:0",
 			fontSize: font.size,
@@ -218,11 +230,11 @@ function main() {
 		// スコアの初期化
 		let score: number = 0;
 
-		scene.append(scoreLabel);
+		mainScene.append(scoreLabel);
 
 		// ゲームオーバー画像を生成
 		const gameover = new g.Sprite({
-			scene: scene,
+			scene: mainScene,
 			src: gameoverImageAsset,
 			width: gameoverImageAsset.width,
 			height: gameoverImageAsset.height,
@@ -233,11 +245,11 @@ function main() {
 		gameover.x = (g.game.width - gameover.width) / 2;
 		gameover.y = (g.game.height - gameover.height) / 2;
 
-		scene.append(gameover);
+		mainScene.append(gameover);
 
 		// クリア画像を生成
 		const clear = new g.Sprite({
-			scene: scene,
+			scene: mainScene,
 			src: clearImageAsset,
 			width: clearImageAsset.width,
 			height: clearImageAsset.height,
@@ -248,11 +260,34 @@ function main() {
 		clear.x = (g.game.width - clear.width) / 2;
 		clear.y = (g.game.height - clear.height) / 2;
 
-		scene.append(clear);
+		mainScene.append(clear);
+
+		// 再スタート画像を生成
+		const restart = new g.Sprite({
+			scene: mainScene,
+			src: restartImageAsset,
+			width: restartImageAsset.width,
+			height: restartImageAsset.height,
+			hidden: true,
+			touchable: true
+		});
+
+		// 再スタート画像の初期座標
+		restart.x = (g.game.width - restart.width) / 2;
+		restart.y = (g.game.height - restart.height) / 1.3;
+
+		mainScene.append(restart);
+		restart.onPointUp.add(function () {
+			const reStartScene = startSceneCreate();
+			const reMainScene = mainSceneCreate();
+			start(reStartScene, reMainScene);
+			mainLoad(reMainScene);
+			g.game.replaceScene(reStartScene);
+		});
 
 		// プレイヤー（キノコ君）を生成
 		const player = new g.Sprite({
-			scene: scene,
+			scene: mainScene,
 			src: playerImageAsset,
 			width: playerImageAsset.width,
 			height: playerImageAsset.height,
@@ -280,27 +315,33 @@ function main() {
 			player.modified();
 		});
 
-		scene.append(player);
+		mainScene.append(player);
 
 		// 食べられるキノコを生成
-		const edibleMushroom = edibleMushroomCreate(scene, edibleMushroomImageAsset, 0, 40);
+		const edibleMushroom = edibleMushroomCreate(mainScene, edibleMushroomImageAsset, 0, 40);
 		const c_edibleMushroom = c_edibleMushroomCreate(edibleMushroom, edibleMushroomImageAsset);
 		// 食べられるキノコを即表示
 		edibleMushroom.show();
 		edibleMushroomMove(edibleMushroom, c_edibleMushroom, c_player, eatAudioAsset, score, scoreLabel, gameover, clear, player, 5);
-		scene.append(edibleMushroom);
+		mainScene.append(edibleMushroom);
 
 		// 毒キノコを表示
 		for (let i = 0; i < 7; i++) {
-			scene.setTimeout(function () {
-				poisonousMushroomShow(scene, poisonousMushroomImageAsset, player, c_player, sirenAudioAsset, gameover, clear, 5, 60 * (i + 1));
+			mainScene.setTimeout(function () {
+				poisonousMushroomShow(mainScene, poisonousMushroomImageAsset, player, c_player, sirenAudioAsset, gameover, clear, restart, 5, 60 * (i + 1));
 			}, i * 100);
 		}
-
 		// ここまでゲーム内容を記述します
 	});
-	g.game.pushScene(sceneStart);
 
+}
+
+function main() {
+	const startScene = startSceneCreate();
+	const mainScene = mainSceneCreate();
+	start(startScene, mainScene);
+	mainLoad(mainScene);
+	g.game.pushScene(startScene);
 }
 
 export = main;
