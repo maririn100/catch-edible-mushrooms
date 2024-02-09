@@ -186,7 +186,7 @@ function mainSceneCreate() {
 	return scene;
 }
 
-function mainLoad(mainScene: Scene) {
+function mainLoad(mainScene: Scene, moveSpeed: number) {
 	mainScene.onLoad.add(() => {
 		// ここからゲーム内容を記述します
 
@@ -281,7 +281,7 @@ function mainLoad(mainScene: Scene) {
 			const reStartScene = startSceneCreate();
 			const reMainScene = mainSceneCreate();
 			start(reStartScene, reMainScene);
-			mainLoad(reMainScene);
+			mainLoad(reMainScene, 5);
 			g.game.replaceScene(reStartScene);
 		});
 
@@ -328,7 +328,7 @@ function mainLoad(mainScene: Scene) {
 		// 毒キノコを表示
 		for (let i = 0; i < 7; i++) {
 			mainScene.setTimeout(function () {
-				poisonousMushroomShow(mainScene, poisonousMushroomImageAsset, player, c_player, sirenAudioAsset, gameover, clear, restart, 5, 60 * (i + 1));
+				poisonousMushroomShow(mainScene, poisonousMushroomImageAsset, player, c_player, sirenAudioAsset, gameover, clear, restart, moveSpeed, 60 * (i + 1));
 			}, i * 100);
 		}
 		// ここまでゲーム内容を記述します
@@ -340,7 +340,7 @@ function main() {
 	const startScene = startSceneCreate();
 	const mainScene = mainSceneCreate();
 	start(startScene, mainScene);
-	mainLoad(mainScene);
+	mainLoad(mainScene, 5);
 	g.game.pushScene(startScene);
 }
 
