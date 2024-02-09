@@ -135,6 +135,42 @@ function poisonousMushroomShow(scene: Scene, poisonousMushroomImageAsset: ImageA
 }
 
 function main() {
+	const sceneStart = new g.Scene({
+		game: g.game,
+		// このシーンで利用するアセットのIDを列挙し、シーンに通知します
+		assetIds: ["background", "start"]
+	});
+	sceneStart.onLoad.add(() => {
+		const backgroundImageAsset = sceneStart.asset.getImageById("background");
+		const startImageAsset = sceneStart.asset.getImageById("start");
+		// 背景を生成
+		const background = new g.Sprite({
+			scene: sceneStart,
+			src: backgroundImageAsset,
+			width: backgroundImageAsset.width,
+			height: backgroundImageAsset.height
+		});
+		sceneStart.append(background);
+
+		// スタート画像を生成
+		const start = new g.Sprite({
+			scene: sceneStart,
+			src: startImageAsset,
+			width: startImageAsset.width,
+			height: startImageAsset.height,
+			touchable: true
+		});
+
+		// スタート画像の初期座標
+		start.x = (g.game.width - start.width) / 2;
+		start.y = (g.game.height - start.height) / 2;
+
+		sceneStart.append(start);
+		start.onPointUp.add(function () {
+			g.game.replaceScene(scene);
+		});
+	});
+
 	const scene = new g.Scene({
 		game: g.game,
 		// このシーンで利用するアセットのIDを列挙し、シーンに通知します
@@ -263,7 +299,8 @@ function main() {
 
 		// ここまでゲーム内容を記述します
 	});
-	g.game.pushScene(scene);
+	g.game.pushScene(sceneStart);
+
 }
 
 export = main;

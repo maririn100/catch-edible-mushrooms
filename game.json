@@ -68,6 +68,12 @@
 			"path": "image/clear.png",
 			"width": 470,
 			"height": 130
+		},
+		"start": {
+			"type": "image",
+			"path": "image/start.png",
+			"width": 310,
+			"height": 110
 		}
 	},
 	"moduleMainScripts": {
