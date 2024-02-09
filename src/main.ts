@@ -32,7 +32,8 @@ function c_edibleMushroomCreate(edibleMushroom: g.Sprite, edibleMushroomImageAss
 }
 
 function edibleMushroomMove(edibleMushroom: g.Sprite, c_edibleMushroom: co.Circle,
-	c_player: co.Circle, eatAudioAsset: AudioAsset, score: number, scoreLabel: g.Label, gameover: g.Sprite, clear: g.Sprite, player: g.Sprite, moveSpeed: number) {
+	c_player: co.Circle, eatAudioAsset: AudioAsset, score: number, scoreLabel: g.Label,
+	gameover: g.Sprite, clear: g.Sprite, player: g.Sprite, moveSpeed: number, level: number, levelLabel: g.Label) {
 	edibleMushroom.onUpdate.add(() => {
 		if (edibleMushroom.x >= 640 && gameover.visible() === false && clear.visible() === false) {
 			edibleMushroom.x = 0;
@@ -63,6 +64,10 @@ function edibleMushroomMove(edibleMushroom: g.Sprite, c_edibleMushroom: co.Circl
 					player.touchable = false;
 					player.modified();
 					clear.show();
+					// TODO ここでレベルアップボタン表示をして、レベルアップできるようにする（↓以下の処理はレベルアップボタン押した後にやる方向）
+					++level;
+					levelLabel.text = scoreText(level, "LEVEL");
+					levelLabel.invalidate();
 				}
 			}
 		}
@@ -217,13 +222,28 @@ function mainLoad(mainScene: Scene, moveSpeed: number) {
 			size: 16
 		});
 
+		// レベルラベルを生成
+		const levelLabel = new g.Label({
+			scene: mainScene,
+			font: font,
+			text: "LEVEL:1",
+			fontSize: font.size,
+			x: 10,
+			y: 10
+		});
+
+		// レベルの初期化
+		let level: number = 1;
+
+		mainScene.append(levelLabel);
+
 		// スコアラベルを生成
 		const scoreLabel = new g.Label({
 			scene: mainScene,
 			font: font,
 			text: "SCORE:0",
 			fontSize: font.size,
-			x: 10,
+			x: 100,
 			y: 10
 		});
 
@@ -322,7 +342,7 @@ function mainLoad(mainScene: Scene, moveSpeed: number) {
 		const c_edibleMushroom = c_edibleMushroomCreate(edibleMushroom, edibleMushroomImageAsset);
 		// 食べられるキノコを即表示
 		edibleMushroom.show();
-		edibleMushroomMove(edibleMushroom, c_edibleMushroom, c_player, eatAudioAsset, score, scoreLabel, gameover, clear, player, 5);
+		edibleMushroomMove(edibleMushroom, c_edibleMushroom, c_player, eatAudioAsset, score, scoreLabel, gameover, clear, player, 5, level, levelLabel);
 		mainScene.append(edibleMushroom);
 
 		// 毒キノコを表示
