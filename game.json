@@ -80,6 +80,12 @@
 			"path": "image/restart.png",
 			"width": 165,
 			"height": 50
+		},
+		"levelup": {
+			"type": "image",
+			"path": "image/levelup.png",
+			"width": 165,
+			"height": 50
 		}
 	},
 	"moduleMainScripts": {

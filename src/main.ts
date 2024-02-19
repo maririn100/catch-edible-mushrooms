@@ -33,7 +33,8 @@ function c_edibleMushroomCreate(edibleMushroom: g.Sprite, edibleMushroomImageAss
 
 function edibleMushroomMove(edibleMushroom: g.Sprite, c_edibleMushroom: co.Circle,
 	c_player: co.Circle, eatAudioAsset: AudioAsset, score: number, scoreLabel: g.Label,
-	gameover: g.Sprite, clear: g.Sprite, player: g.Sprite, moveSpeed: number, level: number, levelLabel: g.Label) {
+	gameover: g.Sprite, clear: g.Sprite, player: g.Sprite, moveSpeed: number, level: number,
+	levelLabel: g.Label, levelup: g.Sprite, mainScene: Scene) {
 	edibleMushroom.onUpdate.add(() => {
 		if (edibleMushroom.x >= 640 && gameover.visible() === false && clear.visible() === false) {
 			edibleMushroom.x = 0;
@@ -64,10 +65,7 @@ function edibleMushroomMove(edibleMushroom: g.Sprite, c_edibleMushroom: co.Circl
 					player.touchable = false;
 					player.modified();
 					clear.show();
-					// TODO ここでレベルアップボタン表示をして、レベルアップできるようにする（↓以下の処理はレベルアップボタン押した後にやる方向）
-					++level;
-					levelLabel.text = scoreText(level, "LEVEL");
-					levelLabel.invalidate();
+					levelup.show();
 				}
 			}
 		}
@@ -186,7 +184,7 @@ function mainSceneCreate() {
 	const scene = new g.Scene({
 		game: g.game,
 		// このシーンで利用するアセットのIDを列挙し、シーンに通知します
-		assetIds: ["player", "edibleMushroom", "eat", "background", "poisonousMushroom", "siren", "gameover", "clear", "restart"]
+		assetIds: ["player", "edibleMushroom", "eat", "background", "poisonousMushroom", "siren", "gameover", "clear", "restart", "levelup"]
 	});
 	return scene;
 }
@@ -205,6 +203,7 @@ function mainLoad(mainScene: Scene, moveSpeed: number) {
 		const gameoverImageAsset = mainScene.asset.getImageById("gameover");
 		const clearImageAsset = mainScene.asset.getImageById("clear");
 		const restartImageAsset = mainScene.asset.getImageById("restart");
+		const levelupImageAsset = mainScene.asset.getImageById("levelup");
 
 		// 背景を生成
 		const background = new g.Sprite({
@@ -305,6 +304,22 @@ function mainLoad(mainScene: Scene, moveSpeed: number) {
 			g.game.replaceScene(reStartScene);
 		});
 
+		// レベルアップ画像を生成
+		const levelup = new g.Sprite({
+			scene: mainScene,
+			src: levelupImageAsset,
+			width: levelupImageAsset.width,
+			height: levelupImageAsset.height,
+			hidden: true,
+			touchable: true
+		});
+
+		// レベルアップ画像の初期座標
+		levelup.x = (g.game.width - levelup.width) / 2;
+		levelup.y = (g.game.height - levelup.height) / 1.3;
+
+		mainScene.append(levelup);
+
 		// プレイヤー（キノコ君）を生成
 		const player = new g.Sprite({
 			scene: mainScene,
@@ -342,7 +357,7 @@ function mainLoad(mainScene: Scene, moveSpeed: number) {
 		const c_edibleMushroom = c_edibleMushroomCreate(edibleMushroom, edibleMushroomImageAsset);
 		// 食べられるキノコを即表示
 		edibleMushroom.show();
-		edibleMushroomMove(edibleMushroom, c_edibleMushroom, c_player, eatAudioAsset, score, scoreLabel, gameover, clear, player, 5, level, levelLabel);
+		edibleMushroomMove(edibleMushroom, c_edibleMushroom, c_player, eatAudioAsset, score, scoreLabel, gameover, clear, player, 5, level, levelLabel, levelup, mainScene);
 		mainScene.append(edibleMushroom);
 
 		// 毒キノコを表示
@@ -351,6 +366,25 @@ function mainLoad(mainScene: Scene, moveSpeed: number) {
 				poisonousMushroomShow(mainScene, poisonousMushroomImageAsset, player, c_player, sirenAudioAsset, gameover, clear, restart, moveSpeed, 60 * (i + 1));
 			}, i * 100);
 		}
+
+		levelup.onPointUp.add(function () {
+			player.touchable = true;
+			player.modified();
+			clear.hide();
+			levelup.hide();
+			++level;
+			levelLabel.text = scoreText(level, "LEVEL");
+			levelLabel.invalidate();
+			// TODO 以下のレベルアップ時の処理は再検討
+			edibleMushroomMove(edibleMushroom, c_edibleMushroom, c_player, eatAudioAsset, score, scoreLabel, gameover, clear, player, 5, level, levelLabel, levelup, mainScene);
+			mainScene.append(edibleMushroom);
+			// 毒キノコを表示
+			for (let i = 0; i < 7; i++) {
+				mainScene.setTimeout(function () {
+					poisonousMushroomShow(mainScene, poisonousMushroomImageAsset, player, c_player, sirenAudioAsset, gameover, clear, restart, moveSpeed * 2, 60 * (i + 1));
+				}, i * 100);
+			}
+		});
 		// ここまでゲーム内容を記述します
 	});
 
