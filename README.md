@@ -1,13 +1,13 @@
-# typescript-game-sample
+# catch-edible-mushrooms
 
-**typescript-game-sample**はTypeScriptでAkashicのゲームを作る際のサンプルプロジェクトです。
+**tcatch-edible-mushrooms**はTypeScriptでAkashicのゲームを作る際のサンプルプロジェクトです。
 
 ## 利用方法
 
- `typescript-game-sample` を利用するにはNode.jsが必要です。
+ `catch-edible-mushrooms` を利用するにはNode.jsが必要です。
 
 初回のみ、以下のコマンドを実行して、ビルドに必要なパッケージをインストールしてください。
-この作業は `typescript-game-sample` を新しく生成するごとに必要です。
+この作業は `catch-edible-mushrooms` を新しく生成するごとに必要です。
 
 ```sh
 npm install
@@ -15,7 +15,7 @@ npm install
 
 ### ビルド方法
 
-`typescript-game-sample` はTypeScriptで書かれているため、以下のコマンドでJavaScriptファイルに変換する必要があります。
+`catch-edible-mushrooms` はTypeScriptで書かれているため、以下のコマンドでJavaScriptファイルに変換する必要があります。
 
 ```sh
 npm run build
@@ -50,13 +50,13 @@ npm run build
 
 ### npm モジュールの追加・削除
 
-`typescript-game-sample` でnpmモジュールを利用する場合、このディレクトリで `akashic install <package_name>` することで npm モジュールを追加することができます。
+`catch-edible-mushrooms` でnpmモジュールを利用する場合、このディレクトリで `akashic install <package_name>` することで npm モジュールを追加することができます。
 
 また `akashic uninstall <package_name>` すると npm モジュールを削除することができます。
 
 ## エクスポート方法
 
-`typescript-game-sample` をエクスポートするときは以下のコマンドを利用します。
+`catch-edible-mushrooms` をエクスポートするときは以下のコマンドを利用します。
 
 ### htmlファイルのエクスポート
 
