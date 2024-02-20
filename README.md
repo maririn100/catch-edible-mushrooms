@@ -5,6 +5,10 @@
 毒キノコから逃れつつ、食べられるキノコを食べて、スコアアップ＆レベルアップを
 目指すゲームです。
 
+## ゲームで遊ぶ方法
+
+ブラウザで `https://maririn100.github.io/catch-edible-mushrooms/game/index.html` にアクセスするとゲームで遊べます。
+
 ## 利用方法
 
  `catch-edible-mushrooms` を利用するにはNode.jsが必要です。
