@@ -1,6 +1,9 @@
 # catch-edible-mushrooms
 
-**tcatch-edible-mushrooms**はTypeScriptでAkashicのゲームを作る際のサンプルプロジェクトです。
+**tcatch-edible-mushrooms**はTypeScriptでAkashicのゲームを作成したサンプルプロジェクトです。
+オリジナルキャラクターのキノコ君をマウスで掴んで操作し、
+毒キノコから逃れつつ、食べられるキノコを食べて、スコアアップ＆レベルアップを
+目指すゲームです。
 
 ## 利用方法
 
