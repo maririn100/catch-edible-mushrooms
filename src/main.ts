@@ -61,7 +61,8 @@ function edibleMushroomMove(edibleMushroom: g.Sprite, c_edibleMushroom: co.Circl
 				++score;
 				scoreLabel.text = scoreText(score, "SCORE");
 				scoreLabel.invalidate();
-				if (score === 10) {
+				// 10点毎にレベルアップ
+				if ((score % 10) === 0) {
 					player.touchable = false;
 					player.modified();
 					clear.show();
@@ -125,17 +126,6 @@ function poisonousMushroomMove(poisonousMushroom: g.Sprite, c_poisonousMushroom:
 		// キノコの座標に変更があった場合、 modified() を実行して変更をゲームに通知
 		poisonousMushroom.modified();
 	});
-}
-
-function poisonousMushroomShow(scene: Scene, poisonousMushroomImageAsset: ImageAsset, player: g.Sprite, c_player: co.Circle,
-	sirenAudioAsset: AudioAsset, gameover: g.Sprite, clear: g.Sprite, restart: g.Sprite, moveSpeed: number, p_y: number) {
-	// 毒キノコを生成
-	const poisonousMushroom = poisonousMushroomCreate(scene, poisonousMushroomImageAsset, 0, p_y);
-	const c_poisonousMushroom = c_poisonousMushroomCreate(poisonousMushroom, poisonousMushroomImageAsset);
-	// 毒キノコを即表示
-	poisonousMushroom.show();
-	poisonousMushroomMove(poisonousMushroom, c_poisonousMushroom, player, c_player, sirenAudioAsset, gameover, clear, restart, moveSpeed);
-	scene.append(poisonousMushroom);
 }
 
 function start(startScene: Scene, mainScene: Scene) {
@@ -360,10 +350,18 @@ function mainLoad(mainScene: Scene, moveSpeed: number) {
 		edibleMushroomMove(edibleMushroom, c_edibleMushroom, c_player, eatAudioAsset, score, scoreLabel, gameover, clear, player, 5, level, levelLabel, levelup, mainScene);
 		mainScene.append(edibleMushroom);
 
+		const poisonousMushroom: g.Sprite[] = [];
+		const c_poisonousMushroom: co.Circle[] = [];
 		// 毒キノコを表示
 		for (let i = 0; i < 7; i++) {
 			mainScene.setTimeout(function () {
-				poisonousMushroomShow(mainScene, poisonousMushroomImageAsset, player, c_player, sirenAudioAsset, gameover, clear, restart, moveSpeed, 60 * (i + 1));
+				// 毒キノコを生成
+				poisonousMushroom.push(poisonousMushroomCreate(mainScene, poisonousMushroomImageAsset, 0, 60 * (i + 1)));
+				c_poisonousMushroom.push(c_poisonousMushroomCreate(poisonousMushroom[i], poisonousMushroomImageAsset));
+				// 毒キノコを即表示
+				poisonousMushroom[i].show();
+				poisonousMushroomMove(poisonousMushroom[i], c_poisonousMushroom[i], player, c_player, sirenAudioAsset, gameover, clear, restart, moveSpeed);
+				mainScene.append(poisonousMushroom[i]);
 			}, i * 100);
 		}
 
@@ -375,13 +373,13 @@ function mainLoad(mainScene: Scene, moveSpeed: number) {
 			++level;
 			levelLabel.text = scoreText(level, "LEVEL");
 			levelLabel.invalidate();
-			// TODO 以下のレベルアップ時の処理は再検討
-			edibleMushroomMove(edibleMushroom, c_edibleMushroom, c_player, eatAudioAsset, score, scoreLabel, gameover, clear, player, 5, level, levelLabel, levelup, mainScene);
-			mainScene.append(edibleMushroom);
-			// 毒キノコを表示
+
+			// 毒キノコをスピードアップ
 			for (let i = 0; i < 7; i++) {
 				mainScene.setTimeout(function () {
-					poisonousMushroomShow(mainScene, poisonousMushroomImageAsset, player, c_player, sirenAudioAsset, gameover, clear, restart, moveSpeed * 2, 60 * (i + 1));
+					mainScene.remove(poisonousMushroom[i]);
+					poisonousMushroomMove(poisonousMushroom[i], c_poisonousMushroom[i], player, c_player, sirenAudioAsset, gameover, clear, restart, moveSpeed + (level * 0.001));
+					mainScene.append(poisonousMushroom[i]);
 				}, i * 100);
 			}
 		});
